@@ -2,7 +2,7 @@
 
 Configures the LLM model used throughout the course.
 
-Default: Anthropic claude-haiku-4-5 (fast, cheap, great for learning).
+Default: OpenAI GPT-6 Luna via OpenRouter (provider pinned to OpenAI).
 
 ═══════════════════════════════════════════════════════════════════════════
   ⚠  IMPORTANT: install the matching extra BEFORE swapping providers
@@ -10,8 +10,9 @@ Default: Anthropic claude-haiku-4-5 (fast, cheap, great for learning).
 
   Provider              Install command              Already installed?
   --------------------  ---------------------------  ---------------------
-  Anthropic (default)   -                            yes (default dep)
+  Anthropic             -                            yes (default dep)
   OpenAI                -                            yes (default dep)
+  OpenRouter (default)  -                            yes (default dep)
   Azure OpenAI          uv sync --extra azure        no - install first
   AWS Bedrock           uv sync --extra bedrock      no - install first
   Google Vertex/Gemini  uv sync --extra google       no - install first
@@ -33,16 +34,24 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env", override=True)
 
 from langchain.chat_models import init_chat_model
+from langchain_openrouter import ChatOpenRouter
 
 # ═══ Default Models ══════════════════════════════════════════════════════════
-# Workshop default: Anthropic claude-haiku-4-5, fast and cost-effective.
-# Requires ANTHROPIC_API_KEY in .env
-model = init_chat_model("anthropic:claude-haiku-4-5", timeout=60, max_retries=2)
+# Default: OpenAI GPT-6 Luna via OpenRouter, routed only to the OpenAI provider.
+# Requires OPENROUTER_API_KEY in .env
+model = ChatOpenRouter(
+    model="openai/gpt-6-luna",
+    timeout=60_000,  # ChatOpenRouter 的超时单位是毫秒
+    max_retries=2,
+    # OpenRouter 供应商路由：只走 OpenAI，不回退到其他供应商
+    openrouter_provider={"only": ["openai"], "allow_fallbacks": False},
+)
 
 #A more capable model for steps that need stronger reasoning
 strong_model = init_chat_model("anthropic:claude-sonnet-4-6", timeout=120, max_retries=2)
 
 # ═══ Alternative Models (comment out default above, uncomment one below) ═════
+# model = init_chat_model("anthropic:claude-haiku-4-5", timeout=60, max_retries=2)
 # model = init_chat_model("anthropic:claude-sonnet-4-6")
 # model = init_chat_model("openai:gpt-4.1-mini")
 # model = init_chat_model("openai:gpt-4.1")
@@ -71,13 +80,12 @@ strong_model = init_chat_model("anthropic:claude-sonnet-4-6", timeout=120, max_r
 # from langchain_openai import ChatOpenAI
 # model = ChatOpenAI(model="moonshot-v1-8k", base_url="https://api.moonshot.cn/v1", api_key=os.environ["KIMI_API_KEY"])
 
-# OpenRouter: hosted open-source models via OpenAI-compatible API
-# No extra install needed (langchain-openai is already a default dep)
+# OpenRouter: hosted models from many providers via langchain-openrouter
+# langchain-openrouter is already installed (default dep)
 # Free models available; sign up at openrouter.ai and get an API key
 # Requires OPENROUTER_API_KEY in .env
 #
-# from langchain_openai import ChatOpenAI
-# model = ChatOpenAI(model="nvidia/nemotron-3-ultra-550b-a55b:free", base_url="https://openrouter.ai/api/v1", api_key=os.environ["OPENROUTER_API_KEY"])
+# model = ChatOpenRouter(model="nvidia/nemotron-3-ultra-550b-a55b:free")
 
 
 # ═══ Cloud Provider Models (extra install required, see table above) ═════════
