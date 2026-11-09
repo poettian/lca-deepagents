@@ -47,15 +47,16 @@ model = ChatOpenRouter(
     openrouter_provider={"only": ["openai"], "allow_fallbacks": False},
 )
 
-#A more capable model for steps that need stronger reasoning
-strong_model = init_chat_model("anthropic:claude-sonnet-4-6", timeout=120, max_retries=2)
+# A more capable model for steps that need stronger reasoning
+strong_model = init_chat_model(
+    "anthropic:claude-sonnet-5-5", timeout=120, max_retries=2
+)
 
 # ═══ Alternative Models (comment out default above, uncomment one below) ═════
 # model = init_chat_model("anthropic:claude-haiku-4-5", timeout=60, max_retries=2)
-# model = init_chat_model("anthropic:claude-sonnet-4-6")
-# model = init_chat_model("openai:gpt-4.1-mini")
-# model = init_chat_model("openai:gpt-4.1")
-# strong_model = init_chat_model("openai:gpt-4.1")
+# model = init_chat_model("anthropic:claude-sonnet-5-5")
+# model = init_chat_model("openai:gpt-6-luna", use_responses_api=True)
+# strong_model = init_chat_model("openai:gpt-6.1-sol", use_responses_api=True)
 
 # ═══ Open-Source / Alternative Hosted Models ══════════════════════════════════
 
