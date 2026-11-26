@@ -39,7 +39,7 @@ agent = create_deep_agent(
 )
 
 result = agent.invoke(
-    {"messages": [{"role": "user", "content": "Which five genres have the most tracks?"}]}
+    {"messages": [{"role": "user", "content": "Which genres have the most tracks, and which employee has handled the most invoices?"}]}
 )
 
 print(result["messages"][-1].text)
