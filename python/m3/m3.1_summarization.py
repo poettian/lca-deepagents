@@ -17,13 +17,14 @@ import asyncio
 
 from deepagents import create_deep_agent
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 
 from models import model
 
 # Shrink the reported context window so summarization triggers at ~595 tokens
 # (85% of 700) instead of the real threshold. Must use model object, not string.
-model.profile = {**model.profile, "max_input_tokens": 2000}
+model.profile = {**model.profile, "max_input_tokens": 700}
 
 agent = create_deep_agent(
     model=model,
@@ -31,7 +32,7 @@ agent = create_deep_agent(
     system_prompt="You are a helpful assistant. Keep every response to one sentence.",
 )
 
-THREAD = {"configurable": {"thread_id": "demo"}}
+THREAD: RunnableConfig = {"configurable": {"thread_id": "demo"}}
 
 
 async def turn(message: str) -> str:
